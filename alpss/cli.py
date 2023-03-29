@@ -297,13 +297,13 @@ from .alpss_main import alpss_main
 )
 @click.option(
     "--exp_data_dir",
-    default=".",
+    default=None,
     type=str,
     help="directory from which to read the experimental data file",
 )
 @click.option(
     "--out_files_dir",
-    default="outputs",
+    default=".",
     type=str,
     help="directory to save output data to",
 )
