@@ -73,7 +73,7 @@ def alpss_main(**inputs):
             nrows = inputs['time_to_take'] / t_step
 
             # change directory to where the data is stored
-            if os.path.isdir(inputs['exp_data_dir']):
+            if inputs['exp_data_dir'] and os.path.isdir(inputs['exp_data_dir']):
                 fname = os.path.join(inputs['exp_data_dir'], inputs['filename'])
             else:
                 fname = inputs['filename']
