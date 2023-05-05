@@ -13,9 +13,11 @@ def spall_doi_finder(**inputs):
     rows_to_skip = inputs['header_lines'] + inputs['time_to_skip'] / t_step  # skip the 5 header lines too
     nrows = inputs['time_to_take'] / t_step
 
-    # change directory to where the data is stored
-    os.chdir(inputs['exp_data_dir'])
-    data = pd.read_csv(inputs['filename'], skiprows=int(rows_to_skip), nrows=int(nrows))
+    if inputs['exp_data_dir'] and os.path.isdir(inputs['exp_data_dir']):
+        fname = os.path.join(inputs['exp_data_dir'], inputs['filename'])
+    else:
+        fname = inputs['filename']
+    data = pd.read_csv(fname, skiprows=int(rows_to_skip), nrows=int(nrows))
 
     # rename the columns of the data
     data.columns = ['Time', 'Ampl']

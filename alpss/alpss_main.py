@@ -1,15 +1,19 @@
-from spall_doi_finder import *
-from plotting import *
-from carrier_frequency import *
-from carrier_filter import *
-from velocity_calculation import *
-from spall_analysis import *
-from full_uncertainty_analysis import *
-from saving import *
+import os
+import numpy as np
 from datetime import datetime
+from scipy import signal
 import traceback
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from .spall_doi_finder import spall_doi_finder
+from .plotting import plotting
+from .carrier_frequency import carrier_frequency
+from .carrier_filter import carrier_filter
+from .velocity_calculation import velocity_calculation
+from .spall_analysis import spall_analysis
+from .full_uncertainty_analysis import full_uncertainty_analysis
+from .saving import saving
 
 
 # main function to link together all the sub-functions
@@ -45,7 +49,7 @@ def alpss_main(**inputs):
         # function to generate the final figure
         fig = plotting(sdf_out, cen, cf_out, vc_out,
                        sa_out, fua_out, start_time, end_time, **inputs)
-                       
+
         # function to save the output files if desired
         if inputs['save_data'] == 'yes':
             saving(sdf_out, cen, vc_out, sa_out, fua_out, start_time, end_time, fig, **inputs)
@@ -69,8 +73,11 @@ def alpss_main(**inputs):
             nrows = inputs['time_to_take'] / t_step
 
             # change directory to where the data is stored
-            os.chdir(inputs['exp_data_dir'])
-            data = pd.read_csv(inputs['filename'], skiprows=int(rows_to_skip), nrows=int(nrows))
+            if inputs['exp_data_dir'] and os.path.isdir(inputs['exp_data_dir']):
+                fname = os.path.join(inputs['exp_data_dir'], inputs['filename'])
+            else:
+                fname = inputs['filename']
+            data = pd.read_csv(fname, skiprows=int(rows_to_skip), nrows=int(nrows))
 
             # rename the columns of the data
             data.columns = ['Time', 'Ampl']

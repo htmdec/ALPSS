@@ -6,27 +6,30 @@ from IPython.display import display
 
 # function for saving all the final outputs
 def saving(sdf_out, cen, vc_out, sa_out, fua_out, start_time, end_time, fig, **inputs):
-    # change to the output files directory
-    os.chdir(inputs['out_files_dir'])
+    # use the output files directory if provided
+    if inputs["out_files_dir"] and os.path.isdir(inputs['out_files_dir']):
+        fname = os.path.join(inputs['out_files_dir'], inputs['filename'][0:-4])
+    else:
+        fname = inputs['filename'][0:-4]
 
     # save the plots
-    fig.savefig(fname=(inputs['filename'][0:-4] + '--plots.png'), dpi='figure', format='png', facecolor='w')
+    fig.savefig(fname=f"{fname}--plots.png", dpi='figure', format='png', facecolor='w')
 
     # save the function inputs used for this run
     inputs_df = pd.DataFrame.from_dict(inputs, orient='index', columns=['Input'])
-    inputs_df.to_csv(inputs['filename'][0:-4] + '--inputs' + '.csv', index=True, header=False)
+    inputs_df.to_csv(f"{fname}--inputs.csv", index=True, header=False)
 
     # save the noisy velocity trace
     velocity_data = np.stack((vc_out['time_f'], vc_out['velocity_f']), axis=1)
-    np.savetxt(inputs['filename'][0:-4] + '--velocity' + '.csv', velocity_data, delimiter=',')
+    np.savetxt(f"{fname}--velocity.csv", velocity_data, delimiter=',')
 
     # save the smoothed velocity trace
     velocity_data_smooth = np.stack((vc_out['time_f'], vc_out['velocity_f_smooth']), axis=1)
-    np.savetxt(inputs['filename'][0:-4] + '--velocity--smooth' + '.csv', velocity_data_smooth, delimiter=',')
+    np.savetxt(f"{fname}--velocity--smooth.csv", velocity_data_smooth, delimiter=',')
 
     # save the filtered voltage data
     voltage_data = np.stack((sdf_out['time'], np.real(vc_out['voltage_filt']), np.imag(vc_out['voltage_filt'])), axis=1)
-    np.savetxt(inputs['filename'][0:-4] + '--voltage' + '.csv', voltage_data, delimiter=',')
+    np.savetxt(f"{fname}--voltage.csv", voltage_data, delimiter=',')
 
     # save the final results
     results_to_save = {'Name': ['Date',
